@@ -1,5 +1,7 @@
-<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <path d="M4 60V30C4 14.536 16.536 2 32 2C47.464 2 60 14.536 60 30V60H4Z" fill="#10282D"/>
-  <path d="M17 48V16H23.5L41 38.2V16H48V48H41.5L24 25.8V48H17Z" fill="#F5F1E9"/>
-  <circle cx="55" cy="51" r="6" fill="#C65F34" stroke="#F5F1E9" stroke-width="3"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Nítora">
+  <rect width="64" height="64" fill="#F5F1E9"/>
+<g transform="translate(0.14 0.14) scale(0.99556)">
+    <path fill-rule="evenodd" d="M8 53 L8 30 A24 24 0 0 1 56 30 L56 53 Z M19 45 V18 H24.5 L39.5 37.76 V18 H45 V45 H39.5 L24.5 25.24 V45 Z" fill="#10282D"/>
+    <rect x="5" y="53" width="54" height="5" fill="#C65F34"/>
+  </g>
 </svg>
