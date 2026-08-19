@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Isotipo } from "../logo";
 import Link from "next/link";
 
 /* ------------------------------------------------------------------
@@ -35,16 +36,18 @@ export default function Privacidad() {
   return (
     <main>
       <header className="site-header">
-        <Link className="brand" href="/" aria-label="Nítora, inicio">
-          <span className="brand-mark" aria-hidden="true"><span>N</span><i /></span>
-          <span className="brand-copy">
-            <strong>Nítora</strong>
-            <small>Inteligencia hotelera</small>
-          </span>
-        </Link>
-        <nav aria-label="Navegación principal">
-          <Link className="nav-cta" href="/#solicitar">Ver si mi hotel aplica</Link>
-        </nav>
+        <div className="shell">
+          <Link className="brand" href="/" aria-label="Nítora, inicio">
+            <Isotipo />
+            <span className="brand-copy">
+              <strong>Nítora</strong>
+              <small>Inteligencia hotelera</small>
+            </span>
+          </Link>
+          <nav className="site-nav" aria-label="Navegación principal">
+            <Link className="button button-ghost button-sm" href="/#solicitar">Ver si mi hotel aplica</Link>
+          </nav>
+        </div>
       </header>
 
       {PENDIENTES && (
@@ -250,20 +253,24 @@ export default function Privacidad() {
       </article>
 
       <footer className="site-footer">
-        <div className="footer-brand">
-          <span className="brand-mark" aria-hidden="true"><span>N</span><i /></span>
-          <div>
-            <strong>Nítora</strong>
-            <small>De datos dispersos a decisiones claras.</small>
+        <div className="shell">
+          <div className="footer-brand">
+            <Isotipo />
+            <div>
+              <strong>Nítora</strong>
+              <small>De datos dispersos a decisiones claras.</small>
+            </div>
           </div>
+          <div className="footer-links">
+            <a href="mailto:privacidad@nitora.online">Contacto</a>
+            <Link href="/privacidad">Aviso de privacidad</Link>
+            <Link href="/#metodo">Metodología</Link>
+            <Link href="/">Inicio</Link>
+          </div>
+          <p className="footer-legal">
+            Nítora · Programa piloto · México · No constituye auditoría financiera ni garantía de ingresos.
+          </p>
         </div>
-        <div className="footer-links">
-          <a href="mailto:privacidad@nitora.online">Contacto</a>
-          <Link href="/privacidad">Aviso de privacidad</Link>
-          <Link href="/#metodo">Metodología</Link>
-          <Link href="/">Inicio</Link>
-        </div>
-        <p>Nítora · Programa piloto · México · No constituye auditoría financiera ni garantía de ingresos.</p>
       </footer>
     </main>
   );
