@@ -10,14 +10,29 @@ import Link from "next/link";
    solo. No hay nada más que tocar.
 ------------------------------------------------------------------- */
 
-const DOMICILIO = "PENDIENTE";                    // domicilio para efectos del aviso
-const FECHA_ACTUALIZACION = "17 de agosto de 2026"; // debe coincidir con el día real de publicación
+const DOMICILIO =
+  "Av. de las Américas 1254, piso 10, Country Club, 44610 Guadalajara, Jalisco";
+const FECHA_ACTUALIZACION = "18 de agosto de 2026"; // debe coincidir con el día real de publicación
 const RETENCION_ARCHIVOS = "30";                  // días naturales tras la entrega
 
+/**
+ * Cada encargado se declara sólo si realmente está en uso. Las condiciones son
+ * las mismas variables que encienden cada integración, para que el aviso nunca
+ * liste un proveedor que no trata datos.
+ *
+ * IMPORTANTE: si configuras LEAD_WEBHOOK_URL apuntando a un servicio con
+ * nombre propio (Zapier, Make, Google Sheets, n8n…), añádelo aquí a mano.
+ * La ley pide nombrar al encargado, y desde el código no se puede deducir.
+ */
 const ENCARGADOS = [
   { nombre: "Hostinger", rol: "correo electrónico y DNS del dominio" },
-  { nombre: "OpenAI (ChatGPT Sites)", rol: "alojamiento de este sitio" },
-  { nombre: "Google Analytics", rol: "medición de tráfico y origen de la visita" },
+  { nombre: "Vercel Inc.", rol: "alojamiento y entrega de este sitio" },
+  ...(process.env.RESEND_API_KEY
+    ? [{ nombre: "Resend", rol: "envío de la notificación interna de cada solicitud" }]
+    : []),
+  ...(process.env.NEXT_PUBLIC_GA_ID
+    ? [{ nombre: "Google Analytics", rol: "medición de tráfico y origen de la visita" }]
+    : []),
   { nombre: "WhatsApp (Meta)", rol: "mensajería con quien solicita información" },
 ];
 
@@ -82,7 +97,11 @@ export default function Privacidad() {
           <p>
             <strong>a) Datos de contacto profesional.</strong> Nombre, cargo, hotel o empresa,
             correo electrónico, teléfono y perfil profesional público, obtenidos directamente de
-            usted o de fuentes de acceso público.
+            usted o de fuentes de acceso público. Cuando completa el formulario de este sitio,
+            esos campos —junto con el rango de habitaciones, el sistema que utiliza y la tarea
+            que describe como más costosa— se registran como constancia de su solicitud en el
+            momento en que pulsa el botón, con independencia de que después decida enviarnos o no
+            el mensaje de WhatsApp.
           </p>
           <p>
             <strong>b) Datos de navegación.</strong> Dirección IP, tipo de dispositivo y
@@ -171,8 +190,10 @@ export default function Privacidad() {
           <h2>6. Conservación y eliminación</h2>
           <ul>
             <li>
-              <strong>Datos de contacto profesional:</strong> mientras exista relación comercial o
-              interés legítimo de seguimiento, y hasta 24 meses después del último contacto.
+              <strong>Datos de contacto profesional y solicitudes del formulario:</strong> mientras
+              exista relación comercial o interés legítimo de seguimiento, y hasta 24 meses después
+              del último contacto. Puede pedir la eliminación de su solicitud en cualquier momento
+              y se atiende sin condicionarla a nada.
             </li>
             <li>
               <strong>Archivos operativos del hotel:</strong> se eliminan de forma segura en un
@@ -232,11 +253,19 @@ export default function Privacidad() {
 
         <section>
           <h2>9. Cookies y tecnologías de rastreo</h2>
-          <p>
-            Nuestro sitio utiliza cookies y tecnologías similares para medir el tráfico y entender
-            qué canal originó su visita. Puede deshabilitarlas desde la configuración de su
-            navegador; algunas funciones podrían dejar de operar correctamente.
-          </p>
+          {process.env.NEXT_PUBLIC_GA_ID ? (
+            <p>
+              Nuestro sitio utiliza cookies y tecnologías similares para medir el tráfico y
+              entender qué canal originó su visita. Puede deshabilitarlas desde la configuración
+              de su navegador; algunas funciones podrían dejar de operar correctamente.
+            </p>
+          ) : (
+            <p>
+              Este sitio no utiliza cookies de analítica ni de publicidad. Los parámetros de
+              origen de la visita (UTM) se leen de la dirección de la página y sólo se incluyen
+              en el mensaje que usted decide enviarnos.
+            </p>
+          )}
         </section>
 
         <section>

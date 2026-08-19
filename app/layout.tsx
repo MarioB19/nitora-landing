@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Newsreader } from "next/font/google";
+import Script from "next/script";
+import { siteUrl } from "./site";
 import "./globals.css";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
@@ -7,11 +9,11 @@ const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"]
 const newsreader = Newsreader({ variable: "--font-editorial", subsets: ["latin"] });
 
 /**
- * URL pública del sitio. Sirve para que Next resuelva a URLs absolutas las rutas
- * relativas de metadata — la imagen de Open Graph y el canonical.
- * Es un dominio fijo, así que va aquí y no en una variable de entorno.
+ * Medición. Sin `NEXT_PUBLIC_GA_ID` configurada en Vercel no se carga nada:
+ * la página queda sin etiquetas y sin cookies de analítica.
+ * Mientras esté vacía, el aviso de privacidad no debe declarar Google Analytics.
  */
-const siteUrl = "https://nitora.online";
+const gaId = process.env.NEXT_PUBLIC_GA_ID;
 
 const title = "Nítora | 3 decisiones en 5 días para hoteles independientes";
 const description =
@@ -24,7 +26,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title,
   description,
-  icons: { icon: "/favicon.svg" },
+  icons: { icon: "/favicon.svg", apple: "/apple-touch-icon.png" },
   alternates: { canonical: "/" },
   openGraph: {
     title: ogTitle,
@@ -55,6 +57,20 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="es">
       <body className={`${geistSans.variable} ${geistMono.variable} ${newsreader.variable}`}>
         {children}
+        {gaId && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
+              strategy="afterInteractive"
+            />
+            <Script id="ga4" strategy="afterInteractive">
+              {`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '${gaId}');`}
+            </Script>
+          </>
+        )}
       </body>
     </html>
   );

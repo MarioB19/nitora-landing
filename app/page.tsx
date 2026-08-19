@@ -157,7 +157,10 @@ function PlusIcon() {
 }
 
 export default function Home() {
-  const [sent, setSent] = useState(false);
+  /* Guarda el enlace generado para poder ofrecerlo de nuevo si el navegador
+     bloqueó la ventana emergente. `window.open` con `noopener` siempre
+     devuelve null, así que no hay forma de detectar el bloqueo. */
+  const [waUrl, setWaUrl] = useState<string | null>(null);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -181,15 +184,46 @@ export default function Home() {
       attribution ? `Origen: ${attribution}` : "",
     ].filter(Boolean).join("\n");
 
-    const trackingWindow = window as Window & { dataLayer?: Array<Record<string, unknown>> };
-    trackingWindow.dataLayer?.push({ event: "nitora_lead_whatsapp", form: "margen_uno" });
+    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 
-    setSent(true);
-    window.open(
-      `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`,
-      "_blank",
-      "noopener,noreferrer",
-    );
+    /* GTM dispara con el push a dataLayer; gtag.js necesita la llamada
+       explícita. Se hacen las dos para que la medición funcione con
+       cualquiera de los dos montajes, y ninguna falla si no hay etiqueta. */
+    const trackingWindow = window as Window & {
+      dataLayer?: Array<Record<string, unknown>>;
+      gtag?: (...args: unknown[]) => void;
+    };
+    trackingWindow.dataLayer?.push({ event: "nitora_lead_whatsapp", form: "margen_uno" });
+    trackingWindow.gtag?.("event", "nitora_lead_whatsapp", { form: "margen_uno" });
+
+    /* WhatsApp se abre primero y de forma síncrona: si esperáramos al registro,
+       el navegador dejaría de ver la apertura como consecuencia directa del
+       clic y la bloquearía. */
+    setWaUrl(url);
+    window.open(url, "_blank", "noopener,noreferrer");
+
+    /* El registro va después y nunca bloquea. `keepalive` lo mantiene vivo
+       aunque la pestaña pierda el foco al saltar a WhatsApp. */
+    void fetch("/api/lead", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      keepalive: true,
+      body: JSON.stringify({
+        name: data.get("name"),
+        hotel: data.get("hotel"),
+        role: data.get("role"),
+        email: data.get("email"),
+        rooms: data.get("rooms"),
+        pms: data.get("pms"),
+        pain: data.get("pain"),
+        company: data.get("company"),
+        attribution,
+        page: window.location.href,
+      }),
+    }).catch(() => {
+      /* Si el registro falla, la conversación por WhatsApp ya está en marcha.
+         El fallo queda en los logs del servidor, no en la cara del visitante. */
+    });
   }
 
   return (
@@ -382,21 +416,32 @@ export default function Home() {
               <h4>Hallazgos priorizados</h4>
               <span>Impacto estimado ≠ resultado garantizado</span>
             </div>
-            <div className="sheet-table">
-              <div className="fila cab">
-                <span>Prioridad</span><span>Hallazgo y evidencia</span><span>Impacto</span><span>Confianza</span>
-              </div>
-              {findings.map((f) => (
-                <div className="fila" key={f.idx}>
-                  <span className="idx">{f.idx}</span>
-                  <span className="txt"><strong>{f.title}</strong><small>{f.evidence}</small></span>
-                  <span className="val"><strong>{f.impact}</strong><small>{f.caveat}</small></span>
-                  <span className="pill-wrap">
-                    <b className={f.confidence === "ALTA" ? "pill alta" : "pill media"}>{f.confidence}</b>
-                  </span>
-                </div>
-              ))}
-            </div>
+            <table className="sheet-table">
+              <caption className="sr-only">
+                Hallazgos priorizados del diagnóstico de muestra, con su evidencia, impacto
+                estimado y nivel de confianza.
+              </caption>
+              <thead>
+                <tr className="fila cab">
+                  <th scope="col">Prioridad</th>
+                  <th scope="col">Hallazgo y evidencia</th>
+                  <th scope="col">Impacto</th>
+                  <th scope="col">Confianza</th>
+                </tr>
+              </thead>
+              <tbody>
+                {findings.map((f) => (
+                  <tr className="fila" key={f.idx}>
+                    <td className="idx">{f.idx}</td>
+                    <td className="txt"><strong>{f.title}</strong><small>{f.evidence}</small></td>
+                    <td className="val"><strong>{f.impact}</strong><small>{f.caveat}</small></td>
+                    <td className="pill-wrap">
+                      <b className={f.confidence === "ALTA" ? "pill alta" : "pill media"}>{f.confidence}</b>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
 
             <div className="experimento">
               <span>Próximo experimento · 30 días</span>
@@ -505,6 +550,11 @@ export default function Home() {
               <label>PMS o sistema principal<input name="pms" placeholder="Cloudbeds, Opera, Excel…" /></label>
               <label className="wide">¿Qué tarea consume más tiempo? *<textarea name="pain" required rows={3} placeholder="Consolidar reportes, revisar comisiones, entender cancelaciones…" /></label>
             </div>
+            {/* Trampa antispam: invisible para personas, los bots la llenan. */}
+            <div className="sr-only" aria-hidden="true">
+              <label htmlFor="company">No llenes este campo</label>
+              <input id="company" name="company" type="text" tabIndex={-1} autoComplete="off" />
+            </div>
             <label className="consent">
               <input type="checkbox" required />{" "}
               <span>Acepto ser contactado para evaluar el diagnóstico y confirmo que leí el <a href="/privacidad">aviso de privacidad</a>.</span>
@@ -513,25 +563,25 @@ export default function Home() {
               Validar mi hotel por WhatsApp <ArrowIcon />
             </button>
             <p className="form-note">
-              Al continuar se abrirá WhatsApp con esta información. Tú decides si enviarla; esta
-              página no la almacena.
+              Al continuar se abrirá WhatsApp con el mensaje ya escrito; tú decides si enviarlo.
+              Registramos tu solicitud para poder responderte aunque no completes el envío.
             </p>
             <details className="privacy-disclosure" id="uso-datos">
               <summary>Cómo usamos estos datos</summary>
               <p>
                 Nítora es responsable del tratamiento de estos datos; la identificación completa
                 del responsable está en el <a href="/privacidad">aviso de privacidad</a>. Nombre,
-                correo profesional, hotel, cargo y contexto operativo se usan únicamente para
-                evaluar el encaje, responder tu solicitud y coordinar Margen Uno. No pedimos
-                información sensible ni datos de pago. Puedes solicitar acceso, corrección,
-                cancelación u oposición escribiendo a{" "}
+                correo profesional, hotel, cargo y contexto operativo se guardan como registro de
+                tu solicitud y se usan únicamente para evaluar el encaje, responderte y coordinar
+                Margen Uno. No pedimos información sensible ni datos de pago. Puedes solicitar
+                acceso, corrección, cancelación u oposición escribiendo a{" "}
                 <a href="mailto:privacidad@nitora.online">privacidad@nitora.online</a>.
               </p>
             </details>
-            {sent && (
+            {waUrl && (
               <p className="success" role="status">
-                WhatsApp se abrió en otra pestaña. Si no lo ves, permite ventanas emergentes e
-                inténtalo de nuevo.
+                WhatsApp se abrió en otra pestaña. Si no lo ves,{" "}
+                <a href={waUrl} target="_blank" rel="noopener noreferrer">ábrelo desde aquí</a>.
               </p>
             )}
           </form>
