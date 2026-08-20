@@ -34,7 +34,7 @@ const payloadValido = {
   },
   landingUrl: "https://www.nitora.online/?utm_source=linkedin",
   referrer: "https://www.linkedin.com/",
-  company: "",
+  formWebsite: "",
 };
 
 function solicitud(payload: Record<string, unknown>, origin = ORIGEN, extraHeaders = {}) {

@@ -356,7 +356,8 @@ export async function POST(request: Request) {
   const leadIdTentativo = idTentativo && UUID.test(idTentativo) ? idTentativo.toLowerCase() : randomUUID();
 
   /* Trampa antispam: se responde como si la entrega hubiera ocurrido. */
-  const trampa = texto(lectura.cuerpo.company, LARGO.corto);
+  /* `company` se conserva sólo para clientes previos; el nombre nuevo evita autofill legítimo. */
+  const trampa = texto(lectura.cuerpo.formWebsite ?? lectura.cuerpo.company, LARGO.corto);
   if (trampa) return respuestaJson({ ok: true, leadId: leadIdTentativo });
   if (trampa === null) return respuestaJson({ ok: false, error: "campos_invalidos" }, 422);
 

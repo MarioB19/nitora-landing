@@ -41,7 +41,7 @@ function track(event: string, detail: Record<string, unknown> = {}) {
 }
 
 export function LeadForm() {
-  const companyRef = useRef<HTMLInputElement>(null);
+  const spamTrapRef = useRef<HTMLInputElement>(null);
   const [step, setStep] = useState<1 | 2>(1);
   const [draft, setDraft] = useState<Draft>(initialDraft);
   const [state, setState] = useState<SubmitState>("idle");
@@ -123,7 +123,7 @@ export function LeadForm() {
           submissionId,
           ...draft,
           privacyVersion: PRIVACY_VERSION,
-          company: companyRef.current?.value ?? "",
+          formWebsite: spamTrapRef.current?.value ?? "",
           utm,
           landingUrl: window.location.href,
           referrer: document.referrer,
@@ -235,14 +235,15 @@ export function LeadForm() {
             </label>
           </div>
           <div className="sr-only" aria-hidden="true">
-            <label htmlFor="company">No llenes este campo</label>
+            <label htmlFor="nitora-contact-website">No llenes este campo</label>
             <input
-              ref={companyRef}
-              id="company"
-              name="company"
+              ref={spamTrapRef}
+              id="nitora-contact-website"
+              name="nitora_contact_website"
               type="text"
               tabIndex={-1}
               autoComplete="off"
+              data-form-type="other"
             />
           </div>
           <label className="consent">
