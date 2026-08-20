@@ -3,7 +3,8 @@ import { Isotipo } from "./logo";
 
 import { FormEvent, useState } from "react";
 
-const WHATSAPP_NUMBER = "523321790549";
+/** +52 33 2924 7910. Formato de wa.me: código de país + 10 dígitos, sin signos. */
+const WHATSAPP_NUMBER = "523329247910";
 
 const deliverables = [
   "Mapa del flujo actual de información",
