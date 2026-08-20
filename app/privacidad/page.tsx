@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Isotipo } from "../logo";
+import { Isotipo, LogoLockup } from "../logo";
 import Link from "next/link";
 
 /* ------------------------------------------------------------------
@@ -12,7 +12,7 @@ import Link from "next/link";
 
 const DOMICILIO =
   "Av. de las Américas 1254, piso 10, Country Club, 44610 Guadalajara, Jalisco";
-const FECHA_ACTUALIZACION = "18 de agosto de 2026"; // debe coincidir con el día real de publicación
+const FECHA_ACTUALIZACION = "20 de agosto de 2026"; // debe coincidir con el día real de publicación
 const RETENCION_ARCHIVOS = "30";                  // días naturales tras la entrega
 
 /**
@@ -53,11 +53,7 @@ export default function Privacidad() {
       <header className="site-header">
         <div className="shell">
           <Link className="brand" href="/" aria-label="Nítora, inicio">
-            <Isotipo />
-            <span className="brand-copy">
-              <strong>Nítora</strong>
-              <small>Inteligencia hotelera</small>
-            </span>
+            <LogoLockup />
           </Link>
           <nav className="site-nav" aria-label="Navegación principal">
             <Link className="button button-ghost button-sm" href="/#solicitar">Ver si mi hotel aplica</Link>
@@ -105,8 +101,9 @@ export default function Privacidad() {
           </p>
           <p>
             <strong>b) Datos de navegación.</strong> Dirección IP, tipo de dispositivo y
-            navegador, páginas visitadas y parámetros de origen de la visita (UTM), a través de
-            herramientas de analítica.
+            navegador y páginas visitadas cuando se habilitan herramientas de analítica. Si
+            completa el formulario, también registramos la página de entrada, el referente y los
+            parámetros de origen de la visita (UTM) para atribuir la solicitud.
           </p>
           <p>
             <strong>c) Archivos operativos del hotel.</strong> Cuando contrata el diagnóstico
@@ -262,8 +259,9 @@ export default function Privacidad() {
           ) : (
             <p>
               Este sitio no utiliza cookies de analítica ni de publicidad. Los parámetros de
-              origen de la visita (UTM) se leen de la dirección de la página y sólo se incluyen
-              en el mensaje que usted decide enviarnos.
+              origen de la visita (UTM) se leen de la dirección de la página y se registran sólo
+              cuando usted envía la solicitud de evaluación. Si después abre WhatsApp, también se
+              incluyen en ese mensaje para conservar la atribución.
             </p>
           )}
         </section>

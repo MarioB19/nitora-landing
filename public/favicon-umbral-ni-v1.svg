@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Nítora — isotipo Umbral Ní, versión color" shape-rendering="geometricPrecision">
+  <title>Nítora — isotipo Umbral Ní, versión color</title>
+  <desc>Monograma geométrico N más í, construido con masas y vacíos diagonales. El fondo del archivo es transparente.</desc>
+  <!-- Nítora · Umbral Ní v1 · 2026-08-20 -->
+<!-- Curvas vectoriales; sin dependencia de fuentes. Fondo transparente. -->
+  <g data-component="isotipo">
+    <path data-part="monograma-ni" d="M8 7H20V57H8ZM16 7H28L50 57H38ZM44 22H56V57H44Z" fill="#10282D"/>
+    <path data-part="acento" d="M42 18L49.5 7H58L50.5 18Z" fill="#C65F34"/>
+  </g>
+</svg>

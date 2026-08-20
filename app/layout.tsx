@@ -26,7 +26,10 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title,
   description,
-  icons: { icon: "/favicon.svg", apple: "/apple-touch-icon.png" },
+  icons: {
+    icon: [{ url: "/favicon-umbral-ni-v1.svg", type: "image/svg+xml" }],
+    apple: [{ url: "/apple-touch-icon-umbral-ni-v1.png", sizes: "180x180", type: "image/png" }],
+  },
   alternates: { canonical: "/" },
   openGraph: {
     title: ogTitle,
@@ -37,10 +40,10 @@ export const metadata: Metadata = {
     url: "/",
     images: [
       {
-        url: "/og-nitora-v2.png",
+        url: "/og-nitora-umbral-ni-v1.png",
         width: 1200,
         height: 630,
-        alt: "Nítora — tres decisiones en cinco días para hoteles independientes",
+        alt: "Nítora — de datos dispersos a decisiones claras",
       },
     ],
   },
@@ -48,7 +51,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: ogTitle,
     description: ogDescription,
-    images: ["/og-nitora-v2.png"],
+    images: ["/og-nitora-umbral-ni-v1.png"],
   },
 };
 

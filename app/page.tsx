@@ -1,16 +1,14 @@
 "use client";
-import { Isotipo } from "./logo";
-
-import { FormEvent, useState } from "react";
-
-/** +52 33 2924 7910. Formato de wa.me: código de país + 10 dígitos, sin signos. */
-const WHATSAPP_NUMBER = "523329247910";
+import { Isotipo, LogoLockup } from "./logo";
+import { ImpactCalculator } from "./components/ImpactCalculator";
+import { LeadForm } from "./components/LeadForm";
+import { MobileCta } from "./components/MobileCta";
 
 const deliverables = [
   "Mapa del flujo actual de información",
   "Horas mensuales estimadas en tareas manuales",
   "Señales de posibles fugas de ingreso neto",
-  "Tres oportunidades priorizadas por impacto y esfuerzo",
+  "Tres decisiones: qué corregir, qué medir y qué no tocar todavía",
   "Plan de acción de 30 días con una métrica principal",
   "Resumen y sesión ejecutiva de resultados",
 ];
@@ -38,24 +36,24 @@ const findings = [
     idx: "01",
     title: "Reportería duplicada",
     evidence: "Tres hojas repiten campos del PMS y del channel manager.",
-    impact: "22 h / mes",
-    caveat: "estimación",
+    impact: "Tiempo por medir",
+    caveat: "requiere bitácora",
     confidence: "ALTA" as const,
   },
   {
     idx: "02",
     title: "Promociones superpuestas",
-    evidence: "Dos descuentos coinciden en 14% de la muestra.",
-    impact: "$18–31 mil",
-    caveat: "requiere validar",
+    evidence: "Dos descuentos coinciden en una parte de la muestra.",
+    impact: "No cuantificado",
+    caveat: "falta tarifa neta",
     confidence: "MEDIA" as const,
   },
   {
     idx: "03",
     title: "Cancelaciones sin lectura común",
     evidence: "El motivo no está normalizado entre canales.",
-    impact: "7 h / mes",
-    caveat: "estimación",
+    impact: "Dato inconsistente",
+    caveat: "requiere normalizar",
     confidence: "MEDIA" as const,
   },
 ];
@@ -158,166 +156,126 @@ function PlusIcon() {
 }
 
 export default function Home() {
-  /* Guarda el enlace generado para poder ofrecerlo de nuevo si el navegador
-     bloqueó la ventana emergente. `window.open` con `noopener` siempre
-     devuelve null, así que no hay forma de detectar el bloqueo. */
-  const [waUrl, setWaUrl] = useState<string | null>(null);
-
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const params = new URLSearchParams(window.location.search);
-    const attribution = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"]
-      .map((key) => [key, params.get(key)] as const)
-      .filter(([, value]) => value)
-      .map(([key, value]) => `${key.replace("utm_", "")}: ${value}`)
-      .join(" · ");
-    const message = [
-      "Hola, me interesa Margen Uno de Nítora.",
-      "",
-      `Nombre: ${data.get("name")}`,
-      `Hotel: ${data.get("hotel")}`,
-      `Cargo: ${data.get("role")}`,
-      `Correo: ${data.get("email")}`,
-      `Habitaciones: ${data.get("rooms")}`,
-      `PMS / sistema: ${data.get("pms") || "Por confirmar"}`,
-      `Mayor fricción: ${data.get("pain")}`,
-      attribution ? `Origen: ${attribution}` : "",
-    ].filter(Boolean).join("\n");
-
-    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
-
-    /* GTM dispara con el push a dataLayer; gtag.js necesita la llamada
-       explícita. Se hacen las dos para que la medición funcione con
-       cualquiera de los dos montajes, y ninguna falla si no hay etiqueta. */
-    const trackingWindow = window as Window & {
-      dataLayer?: Array<Record<string, unknown>>;
-      gtag?: (...args: unknown[]) => void;
-    };
-    trackingWindow.dataLayer?.push({ event: "nitora_lead_whatsapp", form: "margen_uno" });
-    trackingWindow.gtag?.("event", "nitora_lead_whatsapp", { form: "margen_uno" });
-
-    /* WhatsApp se abre primero y de forma síncrona: si esperáramos al registro,
-       el navegador dejaría de ver la apertura como consecuencia directa del
-       clic y la bloquearía. */
-    setWaUrl(url);
-    window.open(url, "_blank", "noopener,noreferrer");
-
-    /* El registro va después y nunca bloquea. `keepalive` lo mantiene vivo
-       aunque la pestaña pierda el foco al saltar a WhatsApp. */
-    void fetch("/api/lead", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      keepalive: true,
-      body: JSON.stringify({
-        name: data.get("name"),
-        hotel: data.get("hotel"),
-        role: data.get("role"),
-        email: data.get("email"),
-        rooms: data.get("rooms"),
-        pms: data.get("pms"),
-        pain: data.get("pain"),
-        company: data.get("company"),
-        attribution,
-        page: window.location.href,
-      }),
-    }).catch(() => {
-      /* Si el registro falla, la conversación por WhatsApp ya está en marcha.
-         El fallo queda en los logs del servidor, no en la cara del visitante. */
-    });
-  }
-
   return (
     <main>
       <header className="site-header">
         <div className="shell">
           <a className="brand" href="#inicio" aria-label="Nítora, inicio">
-            <Isotipo />
-            <span className="brand-copy">
-              <strong>Nítora</strong>
-              <small>Inteligencia hotelera</small>
-            </span>
+            <LogoLockup />
           </a>
           <nav className="site-nav" aria-label="Navegación principal">
-            <a href="#oferta">Qué recibes</a>
+            <a href="#metodo">Cómo funciona</a>
+            <a href="#calcular">Calcula tu carga</a>
             <a href="#ejemplo">Ejemplo</a>
-            <a href="#preguntas">Preguntas</a>
             <a className="button button-ghost button-sm" data-cta="header" href="#solicitar">
-              Ver si mi hotel aplica
+              Solicitar evaluación
             </a>
           </nav>
         </div>
       </header>
 
       <section className="hero" id="inicio">
-        <div className="shell">
-          <h1>
-            Tres decisiones<br />
-            para proteger margen<br />
-            y liberar horas.
-          </h1>
-          <p className="hero-lead">
-            En cinco días cruzamos las exportaciones de reservas y canales que tu equipo ya
-            genera. Identificamos dónde se diluyen el margen y las horas, estimamos el impacto
-            y priorizamos qué conviene corregir primero.
-          </p>
-          <p className="hero-firme">Sin integraciones, sin credenciales, sin migrar tu PMS.</p>
-          <div className="hero-actions">
-            <a className="button button-primary" data-cta="hero-fit" href="#solicitar">
-              Ver si mi hotel aplica <ArrowIcon />
-            </a>
-            <a className="link-quiet" data-cta="hero-sample" href="#ejemplo">
-              Ver diagnóstico de muestra
-            </a>
+        <div className="shell hero-grid">
+          <div className="hero-copy">
+            <p className="hero-eyebrow">Margen Uno · diagnóstico para hoteles independientes</p>
+            <h1>
+              Tres decisiones para proteger <em>margen y liberar horas.</em>
+            </h1>
+            <p className="hero-lead">
+              Tus sistemas ya generan los datos. En cinco días hábiles los convertimos en una
+              línea base y tres decisiones: qué corregir ahora, qué medir durante 30 días y qué
+              no vale la pena tocar todavía.
+            </p>
+            <p className="hero-firme">Sin acceso al PMS. Sin integraciones. Validamos los archivos antes de cobrar.</p>
+            <div className="hero-actions">
+              <a className="button button-primary" data-cta="hero-fit" href="#solicitar">
+                Solicitar evaluación gratuita <ArrowIcon />
+              </a>
+              <a className="link-quiet" data-cta="hero-sample" href="#ejemplo">
+                Ver ejemplo con trazabilidad
+              </a>
+            </div>
+            <div className="hero-oferta">
+              <strong>$5,900 MXN + IVA</strong>
+              <span>Precio piloto · una propiedad</span>
+              <span>El plazo inicia al validar archivos</span>
+            </div>
+            <p className="hero-icp">
+              Para hoteles independientes de 40 a 150 habitaciones que venden por tres o más canales.
+            </p>
           </div>
-          <div className="hero-oferta">
-            <strong>$5,900 MXN + IVA</strong>
-            <span>Una propiedad</span>
-            <span>El plazo inicia cuando validamos tus archivos</span>
-          </div>
-          <p className="hero-icp">
-            Para hoteles independientes de 40 a 150 habitaciones que venden por tres o más canales.
-          </p>
+
+          <article className="hero-diagnostic" aria-label="Vista del diagnóstico con datos hipotéticos">
+            <header className="hero-diagnostic-head">
+              <div>
+                <span className="diagnostic-kicker"><i /> CASO HIPOTÉTICO 01</span>
+                <strong>Lectura de distribución</strong>
+              </div>
+              <span>90 DÍAS</span>
+            </header>
+            <div className="source-flow" aria-label="Fuentes que se revisan">
+              <span>PMS</span><b>+</b><span>Canales</span><b>+</b><span>Excel</span>
+            </div>
+            <div className="diagnostic-summary">
+              <div><small>SEÑALES ENCONTRADAS</small><strong>03</strong></div>
+              <p>La cifra sólo se publica cuando el archivo y la fórmula permiten sostenerla.</p>
+            </div>
+            <ol className="hero-finding-list">
+              {findings.map((finding) => (
+                <li key={finding.idx}>
+                  <span>{finding.idx}</span>
+                  <div><strong>{finding.title}</strong><small>{finding.caveat}</small></div>
+                  <em>{finding.confidence}</em>
+                </li>
+              ))}
+            </ol>
+            <footer className="hero-diagnostic-foot">
+              <span>OBSERVADO</span><span>DECLARADO</span><span>ESTIMADO</span><span>POR VALIDAR</span>
+            </footer>
+          </article>
         </div>
       </section>
 
       <section className="hechos" aria-label="Resumen de Margen Uno">
         <div className="shell hechos-grid">
           <div><strong>5 días</strong><small>de diagnóstico</small></div>
-          <div><strong>3 acciones</strong><small>priorizadas</small></div>
+          <div><strong>3 decisiones</strong><small>con siguiente paso</small></div>
           <div><strong>CSV o Excel</strong><small>sin integración</small></div>
           <div><strong>Antes de cobrar</strong><small>validamos tus archivos</small></div>
         </div>
       </section>
 
-      <section className="sec">
-        <div className="shell">
+      <section className="value-section sec">
+        <div className="shell value-shell">
           <div className="section-intro">
-            <h2>¿Por dónde empiezas?</h2>
+            <p className="eyebrow eyebrow-dark"><span /> El valor para el hotel</p>
+            <h2>No compras más gráficas. Compras claridad para decidir.</h2>
             <p>
-              Tus cifras viven entre PMS, canales, comisiones, cancelaciones y hojas manuales.
-              Margen Uno organiza esa evidencia para convertir una sospecha operativa en una
-              decisión con prioridad, métrica y siguiente paso.
+              El diagnóstico separa la carga operativa de las señales de margen para que una
+              cifra llamativa no se convierta en una recomendación equivocada.
             </p>
           </div>
-          <div className="par">
+          <div className="decision-grid">
             <article>
-              <h3>Cuánto tiempo se va en preparar el reporte</h3>
-              <p>
-                Mapeamos las horas que tu equipo declara invirtiendo en juntar, conciliar y revisar
-                información antes de poder decidir algo con ella.
-              </p>
+              <span>AHORA</span>
+              <h3>Qué corregir primero</h3>
+              <p>Una prioridad explicada con evidencia, impacto, esfuerzo y nivel de confianza.</p>
             </article>
             <article>
-              <h3>Qué es evidencia y qué es suposición</h3>
-              <p>
-                Cada señal declara de qué archivo salió, qué supone y qué tan seguros estamos. Las
-                que no alcanzan para concluir se marcan como tales, no se maquillan.
-              </p>
+              <span>30 DÍAS</span>
+              <h3>Qué conviene medir</h3>
+              <p>Un experimento pequeño con responsable, métrica y criterio para continuar o detener.</p>
+            </article>
+            <article>
+              <span>TODAVÍA NO</span>
+              <h3>Qué no tocar</h3>
+              <p>Lo que no tiene evidencia suficiente y no justifica otra herramienta o proyecto de TI.</p>
             </article>
           </div>
         </div>
       </section>
+
+      <ImpactCalculator />
 
       <section className="metodo sec" id="metodo">
         <div className="shell">
@@ -359,7 +317,7 @@ export default function Home() {
               El pago se solicita después de confirmar que tus archivos permiten un diagnóstico útil.
             </p>
             <a className="button button-primary full" data-cta="offer" href="#solicitar">
-              Quiero validar mis archivos <ArrowIcon />
+              Solicitar evaluación gratuita <ArrowIcon />
             </a>
             <p className="scope-nota">Cupo piloto: cinco hoteles · precio experimental.</p>
           </aside>
@@ -372,8 +330,8 @@ export default function Home() {
             <div className="section-intro">
               <h2>Así se entrega una decisión.</h2>
               <p>
-                Una muestra completa con datos sintéticos. Verás cómo separamos evidencia,
-                estimación y confianza antes de que compartas información de tu hotel.
+                Este formato demostrativo enseña cómo separamos evidencia, estimación y confianza.
+                No representa resultados de clientes ni un benchmark del sector.
               </p>
             </div>
             <button className="button button-ghost button-sm" type="button" onClick={() => window.print()}>
@@ -385,20 +343,19 @@ export default function Home() {
             <header className="sheet-header">
               <div>
                 <p>Nítora · Margen Uno</p>
-                <h3>Hotel Mirador</h3>
+                <h3>Caso hipotético 01</h3>
               </div>
               <div className="sheet-meta">
-                <span>86 hab.</span>
                 <span>1 propiedad</span>
                 <span>90 días</span>
-                <span className="sheet-flag">MUESTRA · DATOS SINTÉTICOS</span>
+                <span className="sheet-flag">FORMATO DEMOSTRATIVO</span>
               </div>
             </header>
 
             <div className="resumen">
               <p>
-                Detectamos <strong>tres oportunidades</strong> que podrían reducir carga manual y
-                proteger ingreso neto visible, sujetas a validación.
+                La lectura encuentra <strong>tres señales</strong>, pero sólo recomienda cuantificar
+                lo que los archivos y sus supuestos permiten sostener.
               </p>
               <div className="confianza">
                 <small>Confianza general</small>
@@ -407,10 +364,10 @@ export default function Home() {
             </div>
 
             <div className="baseline">
-              <div><small>Horas declaradas</small><strong>9.5 h</strong><span>por semana</span></div>
+              <div><small>Horas declaradas</small><strong>Por medir</strong><span>requiere bitácora</span></div>
               <div><small>Fuentes revisadas</small><strong>4</strong><span>sistemas y hojas</span></div>
-              <div><small>Mezcla OTA</small><strong>38%</strong><span>sobre reservas</span></div>
-              <div><small>Calidad de datos</small><strong>76%</strong><span>campos utilizables</span></div>
+              <div><small>Mezcla OTA</small><strong>Pendiente</strong><span>falta normalizar canal</span></div>
+              <div><small>Calidad de datos</small><strong>Media</strong><span>campos incompletos</span></div>
             </div>
 
             <div className="tabla-tit">
@@ -448,28 +405,25 @@ export default function Home() {
               <span>Próximo experimento · 30 días</span>
               <p>
                 <strong>Automatizar un único reporte semanal de pickup.</strong> Medir horas de
-                preparación antes y después, y decisiones ejecutadas. Continuar si reduce al menos
-                50% del tiempo sin aumentar errores.
+                preparación antes y después, y decisiones ejecutadas. Fijar la meta después de
+                levantar la línea base; continuar sólo si baja el tiempo sin aumentar errores.
               </p>
             </div>
 
             <footer className="sheet-footer">
-              <span>Fuentes: exportaciones de muestra y entrevista simulada</span>
-              <span>No constituye auditoría financiera ni garantía de ingresos · 01/01</span>
+              <span>Ejemplo de estructura · sin datos de clientes</span>
+              <span>No es benchmark ni garantía de resultados · 01/01</span>
             </footer>
           </article>
         </div>
       </section>
 
-      <section className="rigor sec">
-        <div className="shell">
-          <h2>Cada hallazgo dice qué sabemos y qué falta validar.</h2>
-          <p>
-            Señalamos de qué archivo o conversación proviene cada observación. Las estimaciones
-            llevan sus supuestos y un nivel explícito de confianza, y cada recomendación viene con
-            una métrica y un criterio para decidir si continuar.
-          </p>
-          <p className="cierre">Si algo no alcanza para concluir, lo dice.</p>
+      <section className="evidence-band" aria-label="Cómo se clasifica la evidencia">
+        <div className="shell evidence-band-grid">
+          <div><strong>Observado</strong><span>Lo que aparece en el archivo.</span></div>
+          <div><strong>Declarado</strong><span>Lo que explica tu equipo.</span></div>
+          <div><strong>Estimado</strong><span>La fórmula y sus supuestos.</span></div>
+          <div><strong>Por validar</strong><span>Lo que todavía no se puede afirmar.</span></div>
         </div>
       </section>
 
@@ -515,11 +469,10 @@ export default function Home() {
         <div className="shell contacto-grid">
           <div>
             <p className="eyebrow"><span /> Primer paso · sin costo</p>
-            <h2>Confirma si tus archivos pueden responder una pregunta útil.</h2>
+            <h2>Cuéntame qué decisión necesitas tomar mejor.</h2>
             <p className="lead-copy">
-              Comparte el contexto mínimo. Revisaremos el encaje y te diremos qué exportaciones
-              serían necesarias. Si la información no permite un diagnóstico sólido, te lo diremos
-              antes de cobrar.
+              No subas archivos aquí. Primero confirmamos el encaje y qué exportaciones serían
+              necesarias. Si la información no permite un diagnóstico sólido, te lo diré antes de cobrar.
             </p>
             <div className="promesa">
               <div><strong>30 minutos</strong><small>Una conversación inicial para definir la pregunta.</small></div>
@@ -527,65 +480,12 @@ export default function Home() {
               <div><strong>Sin accesos</strong><small>No solicitamos credenciales ni datos de tarjeta.</small></div>
             </div>
             <p className="firma">
-              La evaluación y la entrega las hago yo, no un equipo de cuenta. Durante el piloto
-              contesto yo.
+              La evaluación, el análisis y la entrega los hago yo, no un equipo de cuenta.
+              — Brandon Muro
             </p>
           </div>
 
-          <form className="lead-form" onSubmit={handleSubmit}>
-            <div className="form-heading">
-              <span>Ver si mi hotel aplica</span>
-              <small>Campos obligatorios *</small>
-            </div>
-            <div className="form-grid">
-              <label>Nombre *<input name="name" required autoComplete="name" placeholder="Tu nombre" /></label>
-              <label>Hotel *<input name="hotel" required autoComplete="organization" placeholder="Nombre del hotel" /></label>
-              <label>Cargo *<input name="role" required autoComplete="organization-title" placeholder="Gerencia, Revenue, Operaciones…" /></label>
-              <label>Correo de trabajo *<input name="email" type="email" required autoComplete="email" placeholder="nombre@hotel.com" /></label>
-              <label>Habitaciones *
-                <select name="rooms" required defaultValue="">
-                  <option value="" disabled>Selecciona un rango</option>
-                  <option>Menos de 40</option><option>40–79</option><option>80–150</option><option>Más de 150</option>
-                </select>
-              </label>
-              <label>PMS o sistema principal<input name="pms" placeholder="Cloudbeds, Opera, Excel…" /></label>
-              <label className="wide">¿Qué tarea consume más tiempo? *<textarea name="pain" required rows={3} placeholder="Consolidar reportes, revisar comisiones, entender cancelaciones…" /></label>
-            </div>
-            {/* Trampa antispam: invisible para personas, los bots la llenan. */}
-            <div className="sr-only" aria-hidden="true">
-              <label htmlFor="company">No llenes este campo</label>
-              <input id="company" name="company" type="text" tabIndex={-1} autoComplete="off" />
-            </div>
-            <label className="consent">
-              <input type="checkbox" required />{" "}
-              <span>Acepto ser contactado para evaluar el diagnóstico y confirmo que leí el <a href="/privacidad">aviso de privacidad</a>.</span>
-            </label>
-            <button className="button button-accent full" data-cta="form-whatsapp" type="submit">
-              Validar mi hotel por WhatsApp <ArrowIcon />
-            </button>
-            <p className="form-note">
-              Al continuar se abrirá WhatsApp con el mensaje ya escrito; tú decides si enviarlo.
-              Registramos tu solicitud para poder responderte aunque no completes el envío.
-            </p>
-            <details className="privacy-disclosure" id="uso-datos">
-              <summary>Cómo usamos estos datos</summary>
-              <p>
-                Nítora es responsable del tratamiento de estos datos; la identificación completa
-                del responsable está en el <a href="/privacidad">aviso de privacidad</a>. Nombre,
-                correo profesional, hotel, cargo y contexto operativo se guardan como registro de
-                tu solicitud y se usan únicamente para evaluar el encaje, responderte y coordinar
-                Margen Uno. No pedimos información sensible ni datos de pago. Puedes solicitar
-                acceso, corrección, cancelación u oposición escribiendo a{" "}
-                <a href="mailto:privacidad@nitora.online">privacidad@nitora.online</a>.
-              </p>
-            </details>
-            {waUrl && (
-              <p className="success" role="status">
-                WhatsApp se abrió en otra pestaña. Si no lo ves,{" "}
-                <a href={waUrl} target="_blank" rel="noopener noreferrer">ábrelo desde aquí</a>.
-              </p>
-            )}
-          </form>
+          <LeadForm />
         </div>
       </section>
 
@@ -610,9 +510,7 @@ export default function Home() {
         </div>
       </footer>
 
-      <a className="mobile-cta" data-cta="mobile-sticky" href="#solicitar">
-        Ver si mi hotel aplica <ArrowIcon />
-      </a>
+      <MobileCta />
     </main>
   );
 }
