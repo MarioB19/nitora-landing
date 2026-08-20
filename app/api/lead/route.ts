@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server.js";
 
 /**
- * Registro de solicitudes del formulario de Margen Uno.
+ * Registro de solicitudes del diagnóstico de distribución y reportería hotelera.
  *
  * La ruta conserva dos destinos independientes: un webhook para automatización
  * y una notificación interna por Resend. Basta con que uno entregue el lead.
@@ -306,7 +306,7 @@ async function porCorreo(lead: Lead): Promise<boolean> {
         from: process.env.LEAD_NOTIFY_FROM ?? "Nítora <onboarding@resend.dev>",
         to: [destino],
         reply_to: lead.correo,
-        subject: `Margen Uno — ${lead.hotel} (${lead.habitaciones} hab.)`,
+        subject: `Evaluación de distribución — ${lead.hotel} (${lead.habitaciones} hab.)`,
         text: cuerpo,
       }),
       signal: AbortSignal.timeout(TIMEOUT_MS),

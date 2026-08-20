@@ -103,7 +103,7 @@ export function ImpactCalculator() {
           </p>
           <div className="impact-principle">
             <strong>Esto no calcula ahorro.</strong>
-            <span>Calcula la base que Margen Uno tendría que comprobar y desglosar.</span>
+            <span>Calcula una línea base de la carga de reportería que después habrá que comprobar y desglosar.</span>
           </div>
         </div>
 

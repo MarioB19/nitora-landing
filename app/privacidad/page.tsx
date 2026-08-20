@@ -1,17 +1,18 @@
 import type { Metadata } from "next";
-import { Isotipo, LogoLockup } from "../logo";
+import { LogoWordmark } from "../logo";
 import Link from "next/link";
+import { SiteFooter } from "../components/SiteFooter";
+import { businessAddress } from "../site";
 
 /* ------------------------------------------------------------------
-   CAMPOS QUE CIERRA BRANDON ANTES DE PUBLICAR
+   CAMPOS QUE DEBEN CERRARSE ANTES DE PUBLICAR
 
    Mientras alguno siga con el valor "PENDIENTE", la página muestra
    un aviso rojo arriba. En cuanto los completes, el aviso desaparece
    solo. No hay nada más que tocar.
 ------------------------------------------------------------------- */
 
-const DOMICILIO =
-  "Av. de las Américas 1254, piso 10, Country Club, 44610 Guadalajara, Jalisco";
+const DOMICILIO = businessAddress.display;
 const FECHA_ACTUALIZACION = "20 de agosto de 2026"; // debe coincidir con el día real de publicación
 const RETENCION_ARCHIVOS = "30";                  // días naturales tras la entrega
 
@@ -41,9 +42,27 @@ const PENDIENTES = [DOMICILIO, FECHA_ACTUALIZACION, RETENCION_ARCHIVOS].some(
 );
 
 export const metadata: Metadata = {
-  title: "Aviso de privacidad | Nítora",
+  title: "Aviso de privacidad",
   description:
     "Aviso de privacidad integral de Nítora: qué datos tratamos, para qué, con quién los compartimos, cuánto los conservamos y cómo ejercer tus derechos ARCO.",
+  alternates: { canonical: "/privacidad" },
+  openGraph: {
+    title: "Aviso de privacidad | Nítora",
+    description:
+      "Conoce qué datos trata Nítora, con qué finalidad y cómo ejercer tus derechos ARCO.",
+    type: "website",
+    locale: "es_MX",
+    siteName: "Nítora",
+    url: "/privacidad",
+    images: [
+      {
+        url: "/og-nitora-distribucion-v2.png",
+        width: 1200,
+        height: 630,
+        alt: "Nítora — diagnóstico hotelero en cinco días",
+      },
+    ],
+  },
   robots: { index: true, follow: true },
 };
 
@@ -53,7 +72,7 @@ export default function Privacidad() {
       <header className="site-header">
         <div className="shell">
           <Link className="brand" href="/" aria-label="Nítora, inicio">
-            <LogoLockup />
+            <LogoWordmark />
           </Link>
           <nav className="site-nav" aria-label="Navegación principal">
             <Link className="button button-ghost button-sm" href="/#solicitar">Ver si mi hotel aplica</Link>
@@ -107,8 +126,8 @@ export default function Privacidad() {
           </p>
           <p>
             <strong>c) Archivos operativos del hotel.</strong> Cuando contrata el diagnóstico
-            Margen Uno, exportaciones de reservas, canales, cancelaciones, comisiones u ocupación
-            en formato CSV o Excel.
+            de distribución y reportería hotelera, podemos tratar exportaciones de reservas,
+            canales, cancelaciones, comisiones u ocupación en formato CSV o Excel.
           </p>
           <p className="legal-callout">
             <strong>No tratamos datos personales sensibles.</strong> No solicitamos ni almacenamos
@@ -275,30 +294,11 @@ export default function Privacidad() {
         </section>
 
         <p className="legal-back">
-          <Link className="button button-ghost" href="/">← Volver a Margen Uno</Link>
+          <Link className="button button-ghost" href="/">← Volver al inicio</Link>
         </p>
       </article>
 
-      <footer className="site-footer">
-        <div className="shell">
-          <div className="footer-brand">
-            <Isotipo />
-            <div>
-              <strong>Nítora</strong>
-              <small>De datos dispersos a decisiones claras.</small>
-            </div>
-          </div>
-          <div className="footer-links">
-            <a href="mailto:privacidad@nitora.online">Contacto</a>
-            <Link href="/privacidad">Aviso de privacidad</Link>
-            <Link href="/#metodo">Metodología</Link>
-            <Link href="/">Inicio</Link>
-          </div>
-          <p className="footer-legal">
-            Nítora · Programa piloto · México · No constituye auditoría financiera ni garantía de ingresos.
-          </p>
-        </div>
-      </footer>
+      <SiteFooter />
     </main>
   );
 }

@@ -36,7 +36,24 @@ export function Isotipo({
   );
 }
 
-/** Lockup principal exacto, con descriptor y una sola señal cobre. */
-export function LogoLockup({ className = "brand-lockup" }: { className?: string }) {
-  return <span className={className} aria-hidden="true" />;
+/**
+ * Wordmark sin isotipo. En navegación evita repetir la N del monograma junto
+ * a la N inicial de Nítora y mantiene una sola lectura de marca.
+ */
+export function LogoWordmark({ className = "brand-wordmark" }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 136 36"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <image
+        href="/brand/nitora-umbral-ni-wordmark-color.svg"
+        width="136"
+        height="36"
+      />
+    </svg>
+  );
 }

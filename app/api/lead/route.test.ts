@@ -29,7 +29,7 @@ const payloadValido = {
     source: "linkedin",
     medium: "paid_social",
     campaign: "piloto_01",
-    content: "caso_margen",
+    content: "caso_distribucion",
     term: "hoteles_independientes",
   },
   landingUrl: "https://www.nitora.online/?utm_source=linkedin",

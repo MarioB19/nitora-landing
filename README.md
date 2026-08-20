@@ -1,6 +1,6 @@
-# Nítora — Margen Uno
+# Nítora — diagnóstico de distribución y reportería hotelera
 
-Landing pública de adquisición B2B para **Margen Uno**: diagnóstico de distribución en cinco días para hoteles independientes mexicanos de 40–150 habitaciones.
+Landing pública de adquisición B2B para el **diagnóstico de distribución y reportería hotelera en cinco días** de Nítora, dirigido a hoteles independientes mexicanos de 40–150 habitaciones.
 
 Next.js 16 (App Router) · React 19 · Tailwind CSS 4 · TypeScript · desplegada en Vercel.
 
@@ -53,7 +53,7 @@ La URL pública vive en `app/site.ts` (`siteUrl`) y se usa para metadata, robots
 5. Después de la captura se ofrece WhatsApp como canal opcional para añadir contexto.
 6. La medición separa `lead_form_start`, `lead_form_submit`, `lead_captured`, `lead_capture_error` y `whatsapp_open`.
 
-La evaluación de encaje es gratuita; el diagnóstico Margen Uno es pagado.
+La evaluación de encaje es gratuita; el diagnóstico es pagado.
 
 ## Antes de publicar un cambio
 

@@ -1,8 +1,8 @@
 "use client";
 
 import { FormEvent, useRef, useState } from "react";
+import { whatsapp } from "../site";
 
-const WHATSAPP_NUMBER = "523329247910";
 const PRIVACY_VERSION = "2026-08-20";
 const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
@@ -36,8 +36,8 @@ function track(event: string, detail: Record<string, unknown> = {}) {
     gtag?: (...args: unknown[]) => void;
   };
 
-  trackingWindow.dataLayer?.push({ event, form: "margen_uno", ...detail });
-  trackingWindow.gtag?.("event", event, { form: "margen_uno", ...detail });
+  trackingWindow.dataLayer?.push({ event, form: "diagnostico_distribucion", ...detail });
+  trackingWindow.gtag?.("event", event, { form: "diagnostico_distribucion", ...detail });
 }
 
 export function LeadForm() {
@@ -70,7 +70,7 @@ export function LeadForm() {
 
   function buildWhatsAppUrl(submissionId: string, attribution: string) {
     const text = [
-      "Hola, solicité una evaluación de Margen Uno en nitora.online.",
+      "Hola, solicité una evaluación del diagnóstico de distribución y reportería hotelera en nitora.online.",
       "",
       `Referencia: ${submissionId}`,
       `Nombre: ${draft.name}`,
@@ -83,7 +83,7 @@ export function LeadForm() {
       attribution ? `Origen: ${attribution}` : "",
     ].filter(Boolean).join("\n");
 
-    return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
+    return `https://wa.me/${whatsapp.digits}?text=${encodeURIComponent(text)}`;
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -150,10 +150,10 @@ export function LeadForm() {
     return (
       <div className="lead-form lead-success" role="status" aria-live="polite">
         <p className="scope-eyebrow">Solicitud recibida</p>
-        <h3>Ya tengo el contexto de {draft.hotel}.</h3>
+        <h3>Ya tenemos el contexto de {draft.hotel}.</h3>
         <p>
-          Revisaré si existe una pregunta útil para Margen Uno y te contactaré por el correo que
-          compartiste. No subas archivos todavía.
+          Revisaremos si tus archivos permiten responder una pregunta útil sobre distribución o
+          reportería y te contactaremos por el correo que compartiste. No subas archivos todavía.
         </p>
         {waUrl && (
           <a
@@ -186,7 +186,7 @@ export function LeadForm() {
 
       {step === 1 ? (
         <div className="form-step" key="contacto">
-          <p className="form-step-copy">Primero, ¿con quién y con qué hotel hablaré?</p>
+          <p className="form-step-copy">Primero, ¿con quién y con qué hotel hablaremos?</p>
           <div className="form-grid">
             <label>
               Nombre *
@@ -273,7 +273,7 @@ export function LeadForm() {
             <summary>Cómo usamos estos datos</summary>
             <p>
               Nítora usa nombre, correo profesional, hotel, cargo y contexto operativo únicamente
-              para evaluar el encaje, responderte y coordinar Margen Uno. Puedes ejercer tus
+              para evaluar el encaje, responderte y coordinar el diagnóstico. Puedes ejercer tus
               derechos escribiendo a <a href="mailto:privacidad@nitora.online">privacidad@nitora.online</a>.
             </p>
           </details>

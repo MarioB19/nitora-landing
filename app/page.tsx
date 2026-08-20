@@ -1,8 +1,10 @@
 "use client";
-import { Isotipo, LogoLockup } from "./logo";
+import { LogoWordmark } from "./logo";
 import { ImpactCalculator } from "./components/ImpactCalculator";
 import { LeadForm } from "./components/LeadForm";
 import { MobileCta } from "./components/MobileCta";
+import { SiteFooter } from "./components/SiteFooter";
+import { whatsapp, whatsappUrl } from "./site";
 
 const deliverables = [
   "Mapa del flujo actual de información",
@@ -111,7 +113,7 @@ const faqs = [
   {
     question: "¿Incluye implementar las recomendaciones?",
     answer:
-      "No. Margen Uno incluye el diagnóstico, la priorización y un plan de validación de 30 días. Cualquier implementación posterior se cotiza por separado sólo si tiene sentido para el hotel.",
+      "No. El diagnóstico incluye la priorización y un plan de validación de 30 días. Cualquier implementación posterior se cotiza por separado sólo si tiene sentido para el hotel.",
   },
   {
     question: "¿Garantizan recuperar una cantidad de dinero?",
@@ -161,7 +163,7 @@ export default function Home() {
       <header className="site-header">
         <div className="shell">
           <a className="brand" href="#inicio" aria-label="Nítora, inicio">
-            <LogoLockup />
+            <LogoWordmark />
           </a>
           <nav className="site-nav" aria-label="Navegación principal">
             <a href="#metodo">Cómo funciona</a>
@@ -177,14 +179,14 @@ export default function Home() {
       <section className="hero" id="inicio">
         <div className="shell hero-grid">
           <div className="hero-copy">
-            <p className="hero-eyebrow">Margen Uno · diagnóstico para hoteles independientes</p>
+            <p className="hero-eyebrow">Diagnóstico de distribución y reportería hotelera en cinco días</p>
             <h1>
-              Tres decisiones para proteger <em>margen y liberar horas.</em>
+              Detecta qué consume horas y dónde puede diluirse <em>tu ingreso neto.</em>
             </h1>
             <p className="hero-lead">
-              Tus sistemas ya generan los datos. En cinco días hábiles los convertimos en una
-              línea base y tres decisiones: qué corregir ahora, qué medir durante 30 días y qué
-              no vale la pena tocar todavía.
+              En cinco días revisamos exportaciones de reservas, canales, comisiones,
+              cancelaciones y reportes. Entregamos una línea base y tres decisiones: qué corregir
+              ahora, qué medir durante 30 días y qué no tocar todavía.
             </p>
             <p className="hero-firme">Sin acceso al PMS. Sin integraciones. Validamos los archivos antes de cobrar.</p>
             <div className="hero-actions">
@@ -236,7 +238,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="hechos" aria-label="Resumen de Margen Uno">
+      <section className="hechos" aria-label="Resumen del diagnóstico">
         <div className="shell hechos-grid">
           <div><strong>5 días</strong><small>de diagnóstico</small></div>
           <div><strong>3 decisiones</strong><small>con siguiente paso</small></div>
@@ -300,7 +302,7 @@ export default function Home() {
           <div>
             <h2>Una lectura ejecutiva, no otra carpeta de gráficas.</h2>
             <p className="lead-copy">
-              Margen Uno resume qué observamos, qué estimamos, qué conviene validar y cuál debería
+              El diagnóstico resume qué observamos, qué estimamos, qué conviene validar y cuál debería
               ser el siguiente movimiento.
             </p>
             <ul className="entrega-lista">
@@ -309,9 +311,9 @@ export default function Home() {
           </div>
           <aside className="scope-card">
             <p className="scope-eyebrow">Oferta de entrada</p>
-            <h3>Margen Uno</h3>
+            <h3>El diagnóstico</h3>
             <div className="precio"><strong>$5,900</strong><span>MXN + IVA</span></div>
-            <p className="scope-desc">Diagnóstico de distribución y reportería para una propiedad.</p>
+            <p className="scope-desc">Distribución y reportería hotelera en cinco días para una propiedad.</p>
             <hr className="scope-divider" />
             <p className="scope-riesgo">
               El pago se solicita después de confirmar que tus archivos permiten un diagnóstico útil.
@@ -342,7 +344,7 @@ export default function Home() {
           <article className="report-sheet" aria-label="Diagnóstico de distribución de muestra">
             <header className="sheet-header">
               <div>
-                <p>Nítora · Margen Uno</p>
+                <p>Nítora · diagnóstico de distribución</p>
                 <h3>Caso hipotético 01</h3>
               </div>
               <div className="sheet-meta">
@@ -430,7 +432,7 @@ export default function Home() {
       <section className="encaje sec">
         <div className="shell encaje-grid">
           <div>
-            <h2>Margen Uno funciona mejor si hoy…</h2>
+            <h2>El diagnóstico funciona mejor si hoy…</h2>
           </div>
           <div className="encaje-col encaje-si">
             <h3>Buen encaje</h3>
@@ -469,46 +471,34 @@ export default function Home() {
         <div className="shell contacto-grid">
           <div>
             <p className="eyebrow"><span /> Primer paso · sin costo</p>
-            <h2>Cuéntame qué decisión necesitas tomar mejor.</h2>
+            <h2>Cuéntanos qué decisión necesitas tomar mejor.</h2>
             <p className="lead-copy">
-              No subas archivos aquí. Primero confirmamos el encaje y qué exportaciones serían
-              necesarias. Si la información no permite un diagnóstico sólido, te lo diré antes de cobrar.
+              No compartas archivos aquí. Primero confirmamos el encaje y qué exportaciones serían
+              necesarias. Si la información no permite un diagnóstico sólido, te lo diremos antes de cobrar.
             </p>
             <div className="promesa">
               <div><strong>30 minutos</strong><small>Una conversación inicial para definir la pregunta.</small></div>
               <div><strong>Antes de cobrar</strong><small>Validamos que los archivos sean suficientes.</small></div>
               <div><strong>Sin accesos</strong><small>No solicitamos credenciales ni datos de tarjeta.</small></div>
             </div>
-            <p className="firma">
-              La evaluación, el análisis y la entrega los hago yo, no un equipo de cuenta.
-              — Brandon Muro
-            </p>
+            <a
+              className="contact-direct"
+              data-cta="contact-whatsapp"
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span>{whatsapp.label}</span>
+              <strong>{whatsapp.display}</strong>
+              <small>Escríbenos directamente <ArrowIcon /></small>
+            </a>
           </div>
 
           <LeadForm />
         </div>
       </section>
 
-      <footer className="site-footer">
-        <div className="shell">
-          <div className="footer-brand">
-            <Isotipo />
-            <div>
-              <strong>Nítora</strong>
-              <small>De datos dispersos a decisiones claras.</small>
-            </div>
-          </div>
-          <div className="footer-links">
-            <a href="mailto:privacidad@nitora.online">Contacto</a>
-            <a href="/privacidad">Aviso de privacidad</a>
-            <a href="#metodo">Metodología</a>
-            <a href="#inicio">Volver arriba</a>
-          </div>
-          <p className="footer-legal">
-            Nítora · Programa piloto · México · No constituye auditoría financiera ni garantía de ingresos.
-          </p>
-        </div>
-      </footer>
+      <SiteFooter onHome />
 
       <MobileCta />
     </main>
